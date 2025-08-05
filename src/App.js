@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Dashboard from "./components/Dashboard";
 import LeaderBoard from "./components/LeaderBoard";
 
@@ -8,15 +8,14 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('dashboard');
 
-  useEffect(() => {
-    fetchUserData();
-    fetchLeaderboard();
-    setLoading(false);
-  }, []);
+  // API base URL - automatically detect environment
+  const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:5000' 
+    : 'https://basic-full-stack-intern-portal-backend.onrender.com';
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/user');
+      const response = await fetch(`${API_BASE_URL}/api/user`);
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
@@ -24,11 +23,11 @@ function App() {
     } catch (error) {
       // Handle error silently
     }
-  };
+  }, [API_BASE_URL]);
 
-  const fetchLeaderboard = async () => {
+  const fetchLeaderboard = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/leaderboard');
+      const response = await fetch(`${API_BASE_URL}/api/leaderboard`);
       if (response.ok) {
         const data = await response.json();
         setLeaderboard(data);
@@ -36,7 +35,13 @@ function App() {
     } catch (error) {
       // Handle error silently
     }
-  };
+  }, [API_BASE_URL]);
+
+  useEffect(() => {
+    fetchUserData();
+    fetchLeaderboard();
+    setLoading(false);
+  }, [fetchUserData, fetchLeaderboard]);
 
   const handleNavigate = (section) => {
     setActiveSection(section);
