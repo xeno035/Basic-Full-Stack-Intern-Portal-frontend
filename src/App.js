@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Dashboard from "./components/Dashboard";
 import LeaderBoard from "./components/LeaderBoard";
-import Navbar from "./components/Navbar";
 
 function App() {
   const [user, setUser] = useState(null);
